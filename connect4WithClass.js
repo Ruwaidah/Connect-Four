@@ -1,8 +1,12 @@
+const formSubmit = document.querySelector("#color-pick");
+
 class Game {
-  constructor(h, w) {
+  constructor(player1 = "red", player2 = "blue", h, w) {
     this.width = w;
     this.height = h;
-    this.currPlayer = 1;
+    this.currPlayer = player1;
+    this.playerOne = player1;
+    this.playerTwo = player2;
     this.board = [];
     this.makeBoard();
     this.makeHtmlBoard();
@@ -56,7 +60,8 @@ class Game {
   placeInTable(y, x) {
     const piece = document.createElement("div");
     piece.classList.add("piece");
-    piece.classList.add(`p${this.currPlayer}`);
+    // piece.classList.add(`p${this.currPlayer}`);
+    piece.style.backgroundColor = this.currPlayer.colorName;
     piece.style.top = -50 * (y + 2);
 
     const spot = document.getElementById(`${y}-${x}`);
@@ -85,7 +90,7 @@ class Game {
     // check for win
     if (this.checkForWin()) {
       this.gameOver = true;
-      return this.endGame(`Player ${this.currPlayer} won!`);
+      return this.endGame(`Player ${this.currPlayer.colorName} won!`);
     }
 
     // check for tie
@@ -94,7 +99,8 @@ class Game {
     }
 
     // switch players
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+    this.currPlayer =
+      this.currPlayer === this.playerOne ? this.playerTwo : this.playerOne;
   }
 
   /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -156,8 +162,9 @@ class Game {
     const tb = document.querySelector("#board");
     this.board = [];
     tb.innerHTML = "";
-    this.makeBoard();
-    this.makeHtmlBoard();
+    formSubmit.style.display = "block";
+    // this.makeBoard();
+    // this.makeHtmlBoard();
   }
 
   restartGame() {
@@ -167,4 +174,22 @@ class Game {
   }
 }
 
-const newGame = new Game(6, 7); // assuming constructor takes height, width
+formSubmit.addEventListener("submit", function onSubmit(e) {
+  e.preventDefault();
+  let player1Color = document.querySelector("#player1").value;
+  let player2Color = document.querySelector("#player2").value;
+  const player1 = new Player(player1Color);
+  const player2 = new Player(player2Color);
+  document.querySelector("#player1").value = "";
+  document.querySelector("#player2").value = "";
+  formSubmit.style.display = "none";
+  new Game(player1, player2, 6, 7);
+});
+
+class Player {
+  constructor(color) {
+    this.colorName = color;
+  }
+}
+
+//const newGame = new Game(6, 7); // assuming constructor takes height, width
